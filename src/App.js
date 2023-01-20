@@ -1,23 +1,94 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import Form from './Form';
+import axios from 'axios';
+import schema from './schema';
+import * as yup from 'yup';
+
+const initialUsers = [{
+    username: "Jordan",
+    email: "jordan.brewer509@gmail.com",
+    password: "qwerty1234",
+    ToS: true
+  }
+]
+const initialFormValues = {
+  name: "",
+  email: "",
+  password: "",
+  ToS: false
+}
+
+const initialFormErrors = {
+  name: "",
+  email: "",
+  password: "",
+  ToS: false
+}
+
+const initialDisabled = true;
 
 function App() {
+
+  const [user, setUser] = useState(initialUsers);
+  const [form, setForm] = useState(initialFormValues);
+  const [FormErrors, setFormErrors] = useState(initialFormErrors);
+  const [disabled, setDisabled] = useState(initialDisabled);
+
+  const postNewUser = newUser => {
+    axios.post(`https://reqres.in/api/users`, newUser)
+      .then(res => {
+        console.log(res.data)
+        setUser(res.data, ...user);
+      })
+      .catch(err => console.error(err))
+      .finally(() => setForm(initialFormValues))
+  }
+
+  const validate = (name, value) => {
+    yup.reach(schema, name)
+      .validate(value)
+      .then(() => setFormErrors({ ...FormErrors, [name]: "" }))
+      .catch(err => setFormErrors ({ ...FormErrors, [name]: err.errors[0]}))
+  }
+
+  const inputChange = (name, value) => {
+    validate(name, value);
+    setForm({ ...form, [name]: value })
+  }
+
+  const formSubmit = () => {
+    const newUser = {
+      username: form.username.trim(),
+      email: form.email.trim(),
+      password: form.password.trim(),
+    }
+      postNewUser(newUser);
+    }
+
+    useEffect(() => {schema.isValid(form).then(valid => setDisabled(!valid))}, [form])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <header><h1>User Login</h1></header>
+      <Form 
+        values={form}
+        change={inputChange}
+        submit={formSubmit}
+        disabled={disabled}
+        errors={FormErrors}
+      />
+      <div className='users'>
+        {user.map(users => {
+          return (
+          <div className='user details'>
+            <h2>{users.username}</h2>
+            <p>{users.email}</p>
+            <p>{users.password}</p>
+          </div>
+          )
+        })}
+      </div>
     </div>
   );
 }
