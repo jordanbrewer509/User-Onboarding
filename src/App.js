@@ -5,13 +5,8 @@ import axios from 'axios';
 import schema from './schema';
 import * as yup from 'yup';
 
-const initialUsers = [{
-    username: "Jordan",
-    email: "jordan.brewer509@gmail.com",
-    password: "qwerty1234",
-    ToS: true
-  }
-]
+const initialUsers = [];
+
 const initialFormValues = {
   name: "",
   email: "",
@@ -30,7 +25,7 @@ const initialDisabled = true;
 
 function App() {
 
-  const [user, setUser] = useState(initialUsers);
+  const [user, setUser] = useState([]);
   const [form, setForm] = useState(initialFormValues);
   const [FormErrors, setFormErrors] = useState(initialFormErrors);
   const [disabled, setDisabled] = useState(initialDisabled);
@@ -39,7 +34,7 @@ function App() {
     axios.post(`https://reqres.in/api/users`, newUser)
       .then(res => {
         console.log(res.data)
-        setUser(res.data, ...user);
+        setUser([res.data], ...user);
       })
       .catch(err => console.error(err))
       .finally(() => setForm(initialFormValues))
@@ -79,12 +74,12 @@ function App() {
         errors={FormErrors}
       />
       <div className='users'>
-        {user.map(users => {
+        {user.map(x => {
           return (
           <div className='user details'>
-            <h2>{users.username}</h2>
-            <p>{users.email}</p>
-            <p>{users.password}</p>
+            <h2>{x.username}</h2>
+            <p>{x.email}</p>
+            <p>{x.password}</p>
           </div>
           )
         })}
