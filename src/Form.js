@@ -1,7 +1,12 @@
 import React from "react";
 
 export default function Form(props) {
-    const { values, submit, change, disabled, errors } = props
+    const { values, submit, change, disabled, reset, errors } = props
+
+    const onCancel = evt => {
+        evt.preventDefault()
+        reset()
+    }
 
     const onSubmit = evt => {
         evt.preventDefault();
@@ -54,10 +59,12 @@ export default function Form(props) {
                             type="checkbox"
                             onChange={onChange}
                             checked={values.tos}
+                            name="tos"
                         />
                     </label>
 
-                    <button disabled={disabled}>Submit</button> 
+                    <button id="submit" disabled={disabled}>Submit</button> 
+                    <button id="clear" onClick={onCancel}>Clear</button>
                     <div className="errors">
                         <div>{errors.username}</div>
                         <div>{errors.email}</div>

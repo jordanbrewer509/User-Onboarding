@@ -8,14 +8,14 @@ import * as yup from 'yup';
 const initialUsers = [];
 
 const initialFormValues = {
-  name: "",
+  username: "",
   email: "",
   password: "",
   ToS: false
 }
 
 const initialFormErrors = {
-  name: "",
+  username: "",
   email: "",
   password: "",
   ToS: false
@@ -52,6 +52,8 @@ function App() {
     setForm({ ...form, [name]: value })
   }
 
+  const resetForm = () => setForm(initialFormValues);
+
   const formSubmit = () => {
     const newUser = {
       username: form.username.trim(),
@@ -71,6 +73,7 @@ function App() {
         change={inputChange}
         submit={formSubmit}
         disabled={disabled}
+        reset={resetForm}
         errors={FormErrors}
       />
       <div className='users'>
